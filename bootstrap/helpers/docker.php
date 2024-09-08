@@ -253,7 +253,7 @@ function generateServiceSpecificFqdns(ServiceApplication|Application $resource)
 
     return $payload;
 }
-function fqdnLabelsForCaddy(string $network, string $uuid, Collection $domains, bool $is_force_https_enabled = false, $onlyPort = null, ?Collection $serviceLabels = null, ?bool $is_gzip_enabled = true, ?bool $is_stripprefix_enabled = true, ?string $service_name = null, ?string $image = null, string $redirect_direction = 'both', ?string $predefinedPort = null)
+function fqdnLabelsForCaddy(string $network, string $uuid, Collection $domains, bool $is_force_https_enabled = false, $onlyPort = null, ?Collection $serviceLabels = null, ?bool $is_gzip_enabled = true, ?bool $is_stripprefix_enabled = true, ?string $service_name = null, ?string $image = null, string $redirect_direction = 'both', ?string $predefinedPort = null, bool $generate_unique_uuid = false)
 {
     $labels = collect([]);
     if ($serviceLabels) {
@@ -301,7 +301,7 @@ function fqdnLabelsForCaddy(string $network, string $uuid, Collection $domains, 
 
     return $labels->sort();
 }
-function fqdnLabelsForTraefik(string $uuid, Collection $domains, bool $is_force_https_enabled = false, $onlyPort = null, ?Collection $serviceLabels = null, ?bool $is_gzip_enabled = true, ?bool $is_stripprefix_enabled = true, ?string $service_name = null, bool $generate_unique_uuid = false, ?string $image = null, string $redirect_direction = 'both', bool $generate_with_sni = false)
+function fqdnLabelsForTraefik(string $uuid, Collection $domains, bool $is_force_https_enabled = false, $onlyPort = null, ?Collection $serviceLabels = null, ?bool $is_gzip_enabled = true, ?bool $is_stripprefix_enabled = true, ?string $service_name = null, bool $generate_unique_uuid = false, ?string $image = null, string $redirect_direction = 'both', bool $is_used_hostsni = false)
 {
     $labels = collect([]);
     $labels->push('traefik.enable=true');
@@ -362,7 +362,7 @@ function fqdnLabelsForTraefik(string $uuid, Collection $domains, bool $is_force_
                 $https_label = "https-{$loop}-{$uuid}-{$service_name}";
             }
 
-            if($generate_with_sni){
+            if($is_used_hostsni){
                 if($schema === 'https'){
                     // HostSNI is usabled only with tls
                     $labels->push("traefik.http.routers.{$https_label}.entryPoints=https");
@@ -566,7 +566,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                             is_force_https_enabled: $application->isForceHttpsEnabled(),
                             is_gzip_enabled: $application->isGzipEnabled(),
                             is_stripprefix_enabled: $application->isStripprefixEnabled(),
-                            redirect_direction: $application->redirect
+                            redirect_direction: $application->redirect,
+                            is_used_hostsni: $application->IsUsedHostSNI()
                         ));
                         break;
                     case ProxyTypes::CADDY->value:
@@ -578,7 +579,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                             is_force_https_enabled: $application->isForceHttpsEnabled(),
                             is_gzip_enabled: $application->isGzipEnabled(),
                             is_stripprefix_enabled: $application->isStripprefixEnabled(),
-                            redirect_direction: $application->redirect
+                            redirect_direction: $application->redirect,
+                            is_used_hostsni: $application->IsUsedHostSNI()
                         ));
                         break;
                 }
@@ -590,7 +592,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                     is_force_https_enabled: $application->isForceHttpsEnabled(),
                     is_gzip_enabled: $application->isGzipEnabled(),
                     is_stripprefix_enabled: $application->isStripprefixEnabled(),
-                    redirect_direction: $application->redirect
+                    redirect_direction: $application->redirect,
+                    is_used_hostsni: $application->IsUsedHostSNI()
                 ));
                 $labels = $labels->merge(fqdnLabelsForCaddy(
                     network: $application->destination->network,
@@ -600,7 +603,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                     is_force_https_enabled: $application->isForceHttpsEnabled(),
                     is_gzip_enabled: $application->isGzipEnabled(),
                     is_stripprefix_enabled: $application->isStripprefixEnabled(),
-                    redirect_direction: $application->redirect
+                    redirect_direction: $application->redirect,
+                    is_used_hostsni: $application->IsUsedHostSNI()
                 ));
             }
 
@@ -621,7 +625,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                         onlyPort: $onlyPort,
                         is_force_https_enabled: $application->isForceHttpsEnabled(),
                         is_gzip_enabled: $application->isGzipEnabled(),
-                        is_stripprefix_enabled: $application->isStripprefixEnabled()
+                        is_stripprefix_enabled: $application->isStripprefixEnabled(),
+                        is_used_hostsni: $application->IsUsedHostSNI()
                     ));
                     break;
                 case ProxyTypes::CADDY->value:
@@ -632,7 +637,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                         onlyPort: $onlyPort,
                         is_force_https_enabled: $application->isForceHttpsEnabled(),
                         is_gzip_enabled: $application->isGzipEnabled(),
-                        is_stripprefix_enabled: $application->isStripprefixEnabled()
+                        is_stripprefix_enabled: $application->isStripprefixEnabled(),
+                        is_used_hostsni: $application->IsUsedHostSNI()
                     ));
                     break;
             }
@@ -643,7 +649,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                 onlyPort: $onlyPort,
                 is_force_https_enabled: $application->isForceHttpsEnabled(),
                 is_gzip_enabled: $application->isGzipEnabled(),
-                is_stripprefix_enabled: $application->isStripprefixEnabled()
+                is_stripprefix_enabled: $application->isStripprefixEnabled(),
+                is_used_hostsni: $application->IsUsedHostSNI()
             ));
             $labels = $labels->merge(fqdnLabelsForCaddy(
                 network: $application->destination->network,
@@ -652,7 +659,8 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                 onlyPort: $onlyPort,
                 is_force_https_enabled: $application->isForceHttpsEnabled(),
                 is_gzip_enabled: $application->isGzipEnabled(),
-                is_stripprefix_enabled: $application->isStripprefixEnabled()
+                is_stripprefix_enabled: $application->isStripprefixEnabled().
+                is_used_hostsni: $application->IsUsedHostSNI()
             ));
         }
 

@@ -47,6 +47,11 @@ class ServiceApplication extends BaseModel
         return data_get($this, 'is_gzip_enabled', true);
     }
 
+    public function IsUsedHostSNI()
+    {
+        return data_get($this, 'is_used_hostsni', false);
+    }
+
     public function type()
     {
         return 'service';

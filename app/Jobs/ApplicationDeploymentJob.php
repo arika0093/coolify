@@ -1633,7 +1633,8 @@ class ApplicationDeploymentJob implements ShouldBeEncrypted, ShouldQueue
                     onlyPort: $onlyPort,
                     is_force_https_enabled: $this->application->isForceHttpsEnabled(),
                     is_gzip_enabled: $this->application->isGzipEnabled(),
-                    is_stripprefix_enabled: $this->application->isStripprefixEnabled()
+                    is_stripprefix_enabled: $this->application->isStripprefixEnabled(),
+                    is_used_hostsni: $this->$application->IsUsedHostSNI()
                 ));
             }
             $this->application->custom_labels = base64_encode($labels->implode("\n"));

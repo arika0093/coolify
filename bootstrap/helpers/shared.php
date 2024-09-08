@@ -2006,7 +2006,8 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                         is_gzip_enabled: $savedService->isGzipEnabled(),
                                         is_stripprefix_enabled: $savedService->isStripprefixEnabled(),
                                         service_name: $serviceName,
-                                        image: data_get($service, 'image')
+                                        image: data_get($service, 'image'),
+                                        is_used_hostsni: $application->IsUsedHostSNI()
                                     ));
                                     break;
                                 case ProxyTypes::CADDY->value:
@@ -2019,7 +2020,8 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                         is_gzip_enabled: $savedService->isGzipEnabled(),
                                         is_stripprefix_enabled: $savedService->isStripprefixEnabled(),
                                         service_name: $serviceName,
-                                        image: data_get($service, 'image')
+                                        image: data_get($service, 'image'),
+                                        is_used_hostsni: $application->IsUsedHostSNI()
                                     ));
                                     break;
                             }
@@ -2032,7 +2034,8 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                 is_gzip_enabled: $savedService->isGzipEnabled(),
                                 is_stripprefix_enabled: $savedService->isStripprefixEnabled(),
                                 service_name: $serviceName,
-                                image: data_get($service, 'image')
+                                image: data_get($service, 'image'),
+                                is_used_hostsni: $application->IsUsedHostSNI()
                             ));
                             $serviceLabels = $serviceLabels->merge(fqdnLabelsForCaddy(
                                 network: $resource->destination->network,
@@ -2043,7 +2046,8 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                 is_gzip_enabled: $savedService->isGzipEnabled(),
                                 is_stripprefix_enabled: $savedService->isStripprefixEnabled(),
                                 service_name: $serviceName,
-                                image: data_get($service, 'image')
+                                image: data_get($service, 'image'),
+                                is_used_hostsni: $application->IsUsedHostSNI()
                             ));
                         }
                     }
@@ -2783,6 +2787,7 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                             is_force_https_enabled: $resource->isForceHttpsEnabled(),
                                             is_gzip_enabled: $resource->isGzipEnabled(),
                                             is_stripprefix_enabled: $resource->isStripprefixEnabled(),
+                                            is_used_hostsni: $application->IsUsedHostSNI()
                                         )
                                     );
                                     break;
@@ -2810,6 +2815,7 @@ function parseDockerComposeFile(Service|Application $resource, bool $isNew = fal
                                     is_force_https_enabled: $resource->isForceHttpsEnabled(),
                                     is_gzip_enabled: $resource->isGzipEnabled(),
                                     is_stripprefix_enabled: $resource->isStripprefixEnabled(),
+                                    is_used_hostsni: $application->IsUsedHostSNI()
                                 )
                             );
                         }
@@ -3465,7 +3471,8 @@ function newParser(Application|Service $resource, int $pull_request_id = 0, ?int
                             is_gzip_enabled: $originalResource->isGzipEnabled(),
                             is_stripprefix_enabled: $originalResource->isStripprefixEnabled(),
                             service_name: $serviceName,
-                            image: $image
+                            image: $image,
+                            is_used_hostsni: $application->IsUsedHostSNI()
                         ));
                         break;
                     case ProxyTypes::CADDY->value:
@@ -3479,7 +3486,8 @@ function newParser(Application|Service $resource, int $pull_request_id = 0, ?int
                             is_stripprefix_enabled: $originalResource->isStripprefixEnabled(),
                             service_name: $serviceName,
                             image: $image,
-                            predefinedPort: $predefinedPort
+                            predefinedPort: $predefinedPort,
+                            is_used_hostsni: $application->IsUsedHostSNI()
                         ));
                         break;
                 }
@@ -3504,7 +3512,8 @@ function newParser(Application|Service $resource, int $pull_request_id = 0, ?int
                     is_stripprefix_enabled: $originalResource->isStripprefixEnabled(),
                     service_name: $serviceName,
                     image: $image,
-                    predefinedPort: $predefinedPort
+                    predefinedPort: $predefinedPort,
+                    is_used_hostsni: $application->IsUsedHostSNI()
 
                 ));
             }

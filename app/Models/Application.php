@@ -221,6 +221,11 @@ class Application extends BaseModel
         return data_get($this, 'settings.is_gzip_enabled', true);
     }
 
+    public function IsUsedHostSNI()
+    {
+        return data_get($this, 'settings.is_used_hostsni', false);
+    }
+
     public function link()
     {
         if (data_get($this, 'environment.project.uuid')) {
