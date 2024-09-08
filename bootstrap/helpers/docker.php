@@ -659,7 +659,7 @@ function generateLabelsApplication(Application $application, ?ApplicationPreview
                 onlyPort: $onlyPort,
                 is_force_https_enabled: $application->isForceHttpsEnabled(),
                 is_gzip_enabled: $application->isGzipEnabled(),
-                is_stripprefix_enabled: $application->isStripprefixEnabled().
+                is_stripprefix_enabled: $application->isStripprefixEnabled(),
                 is_used_hostsni: $application->IsUsedHostSNI()
             ));
         }
